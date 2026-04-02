@@ -628,7 +628,22 @@ ${personalName}`
 
     return templates[Math.floor(Math.random() * templates.length)];
 }
+function addAutoText(doc, text, x, y, maxWidth, maxHeight){
+  let fontSize = 11;
 
+  doc.setFontSize(fontSize);
+  let lines = doc.splitTextToSize(text, maxWidth);
+
+  // пока текст не влезает — уменьшаем
+  while (lines.length * (fontSize * 0.35) > maxHeight && fontSize > 7){
+    fontSize--;
+    doc.setFontSize(fontSize);
+    lines = doc.splitTextToSize(text, maxWidth);
+  }
+
+  doc.text(lines, x, y);
+  return lines.length * (fontSize * 0.35);
+}
 // ===== PDF =====
 // ===== PDF =====
 function generatePDF(){
