@@ -77,7 +77,7 @@ button:hover{background:#1e7e34;}
 
 <!-- ================= LEBENSLAUF ================= -->
 
-  <div id="lebenslaufFields" style="display:none; width:210mm; min-height:297mm; margin:auto; padding:30mm 25mm; box-sizing:border-box; font-family:Arial, sans-serif; line-height:1.6; background:white;">
+  <div id="lebenslaufFields" style="display:none; width:210mm; min-height:297mm; margin:auto; padding:40mm 30mm; box-sizing:border-box; font-family:Arial, sans-serif; line-height:1.6; background:white;">
   <h1 style="text-align:center; font-size:32px; margin-bottom:30px; color:#1a1a1a;">Lebenslauf</h1>
 
   <!-- Основные данные (две колонки) -->
@@ -658,7 +658,7 @@ function generatePDF(){
 
     // колонки
     let leftX=20, rightX=110;
-    let leftY=40, rightY=40;
+   let leftY=50, rightY=50;
 
     // Собираем дату рождения из трёх полей
     const cvBirth = `${cvBirthDay.value}.${cvBirthMonth.value}.${cvBirthYear.value}`;
@@ -673,12 +673,14 @@ function generatePDF(){
       `Email: ${cvEmail.value}`
     ];
 
-    doc.setFont("helvetica","normal");
-    left.forEach(t=>{
-      let lines=doc.splitTextToSize(t,80);
-      doc.text(lines,leftX,leftY);
-      leftY+=lines.length*7;
-    });
+   doc.setFont("helvetica","normal");
+doc.setFontSize(11);
+
+left.forEach(t=>{
+  let lines=doc.splitTextToSize(t,85);
+  doc.text(lines,leftX,leftY);
+  leftY+=lines.length*9 + 3;
+});
 
     // правая колонка
     const right=[
@@ -695,10 +697,18 @@ function generatePDF(){
       doc.text(title+":",rightX,rightY);
       rightY+=6;
 
-      doc.setFont("helvetica","normal");
-      let lines=doc.splitTextToSize(val,80);
-      doc.text(lines,rightX,rightY);
-      rightY+=lines.length*7+5;
+      doc.setFont("helvetica","bold");
+doc.setFontSize(13);
+doc.text(title+":",rightX,rightY);
+rightY+=8;
+
+doc.setFont("helvetica","normal");
+doc.setFontSize(11);
+
+let lines=doc.splitTextToSize(val || "-",85);
+doc.text(lines,rightX,rightY);
+
+rightY+=lines.length*9 + 10;
     });
 
     doc.save("Lebenslauf_Pro.pdf");
