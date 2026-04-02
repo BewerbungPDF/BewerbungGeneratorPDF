@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BewerbungGenerator</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{font-family:Arial;padding:15px;background:#f2f2f2;max-width:900px;margin:auto;}
+h2{color:#333;text-align:center;}
+label{display:block;margin-top:12px;font-weight:bold;}
+input, textarea{width:100%;padding:10px;margin-top:5px;border:1px solid #ccc;border-radius:5px;font-size:16px;box-sizing:border-box;}
+button{margin-top:20px;padding:14px;font-size:16px;background:#28a745;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;}
+button:hover{background:#1e7e34;}
+.section{background:white;padding:20px;margin-bottom:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+#mainContent{display:none;}
+#welcome{text-align:center;}
+</style>
+</head>
+
+<body>
+
+<h2>DJLMnet</h2>
+
+<div id="welcome" class="section">
+<p>Willkommen! Wähle:</p>
+<button onclick="chooseOption('lebenslauf')">Lebenslauf erstellen</button>
+<button onclick="chooseOption('bewerbung')">Bewerbung erstellen</button>
+</div>
+
+<div id="mainContent" class="section">
+<h3 id="formTitle"></h3>
+
+<!-- ================= BEWERBUNG ================= -->
+<div id="bewerbungFields">
+<label>Firma Name:</label><input id="companyName">
+<label>Straße von Firma:</label><input id="companyStreet">
+<label>E-Mail von Firma:</label><input id="companyEmail">
+<label>Dein Name:</label><input id="personalName">
+<label>Deine Adresse:</label><input id="personalAddress">
+<label>Deine Telefonnummer:</label><input id="personalPhone">
+<label>Deine E-Mail:</label><input id="personalEmail">
+<label>Ort:</label><input id="place">
+<label>Datum:</label><input id="date">
+<label>Bewerbung für:</label><input id="jobTitle">
+<label>Art der Praxis:</label><input id="practiceType">
+<button id="downloadBewerbungBtn" type="button">Bewerbung herunterladen</button>
+</div>
+
+<!-- ================= LEBENSLAUF ================= -->
+<div id="lebenslaufFields" style="display:none; width:210mm; min-height:297mm; margin:auto; padding:30mm 25mm; box-sizing:border-box; font-family:Arial, sans-serif; line-height:1.6; background:white;">
+
+  <!-- Заголовок -->
+  <h1 style="text-align:center; font-size:32px; margin-bottom:30px; color:#1a1a1a;">Lebenslauf</h1>
+
+  <!-- Основные данные (две колонки) -->
+  <div style="display:flex; gap:40px; margin-bottom:30px;">
+    
+    <!-- Левая колонка -->
+    <div style="flex:1;">
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Name:</label>
+      <input id="cvName" placeholder="Max Mustermann" style="width:100%; padding:8px; margin-bottom:20px;">
+
+     <label style="font-weight:bold; display:block; margin-bottom:10px;">Geburtsdatum:</label>
+<div style="display:flex; gap:10px; margin-bottom:20px;">
+  <!-- День -->
+  <select id="cvBirthDay" style="padding:8px; flex:1;">
+    <option value="">Tag</option>
+    <script>
+      for(let d=1; d<=31; d++){
+        document.write(`<option value="${d}">${d}</option>`);
+      }
+    </script>
+  </select>
+
+  <!-- Месяц -->
+  <select id="cvBirthMonth" style="padding:8px; flex:1;">
+    <option value="">Monat</option>
+    <option value="1">Januar</option>
+    <option value="2">Februar</option>
+    <option value="3">März</option>
+    <option value="4">April</option>
+    <option value="5">Mai</option>
+    <option value="6">Juni</option>
+    <option value="7">Juli</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">Oktober</option>
+    <option value="11">November</option>
+    <option value="12">Dezember</option>
+  </select>
+
+  <!-- Год -->
+  <select id="cvBirthYear" style="padding:8px; flex:1;">
+    <option value="">Jahr</option>
+    <script>
+      const currentYear = new Date().getFullYear();
+      for(let y=currentYear; y>=1900; y--){
+        document.write(`<option value="${y}">${y}</option>`);
+      }
+    </script>
+  </select>
+</div>
+
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Geburtsort:</label>
+      <input id="cvBirthPlace" placeholder="Berlin" style="width:100%; padding:8px; margin-bottom:20px;">
+
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Adresse:</label>
+      <input id="cvAddress" placeholder="Musterstraße 1, 12345 Stadt" style="width:100%; padding:8px; margin-bottom:20px;">
+    </div>
+
+    <!-- Правая колонка -->
+    <div style="flex:1;">
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Telefon:</label>
+      <input id="cvPhone" placeholder="+49 123 456789" style="width:100%; padding:8px; margin-bottom:20px;">
+
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Email:</label>
+      <input id="cvEmail" type="email" placeholder="max@email.de" style="width:100%; padding:8px; margin-bottom:20px;">
+
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Sprachen:</label>
+      <input id="cvLanguages" placeholder="Deutsch, Englisch" style="width:100%; padding:8px; margin-bottom:20px;">
+
+      <label style="font-weight:bold; display:block; margin-bottom:10px;">Stärken:</label>
+      <input id="cvStrengths" placeholder="Teamfähig, zuverlässig" style="width:100%; padding:8px; margin-bottom:20px;">
+    </div>
+
+  </div>
+
+  <hr style="border:1px solid #ccc; margin-bottom:30px;">
+
+  <!-- Школьное образование -->
+  <label style="font-weight:bold; display:block; margin-bottom:10px;">Schule:</label>
+  <input id="cvSchool" placeholder="Gymnasium / Schule" style="width:100%; padding:10px; margin-bottom:30px;">
+
+  <!-- Опыт работы -->
+  <label style="font-weight:bold; display:block; margin-bottom:10px;">Erfahrungen:</label>
+  <textarea id="cvExperience" placeholder="Praktikum, Nebenjob..." style="width:100%; min-height:100px; padding:10px; margin-bottom:30px;"></textarea>
+
+  <!-- Навыки -->
+  <label style="font-weight:bold; display:block; margin-bottom:10px;">Fähigkeiten:</label>
+  <textarea id="cvSkills" placeholder="MS Office, Programmieren..." style="width:100%; min-height:100px; padding:10px; margin-bottom:30px;"></textarea>
+
+  <!-- Хобби -->
+  <label style="font-weight:bold; display:block; margin-bottom:10px;">Hobbys:</label>
+  <textarea id="cvHobbies" placeholder="Sport, Lesen..." style="width:100%; min-height:80px; padding:10px; margin-bottom:30px;"></textarea>
+
+  <!-- Кнопка -->
+  <button onclick="generatePDF()" style="padding:12px 25px; font-size:16px; background-color:#1a73e8; color:white; border:none; border-radius:5px; cursor:pointer;">PDF herunterladen</button>
+
+</div>
+
+<script>
+  window.currentMode = "lebenslauf";
+  // ===== UI логика =====
+  function chooseOption(option){
+    document.getElementById('welcome').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+
+    if(option==='lebenslauf'){
+      document.getElementById('formTitle').innerText="Lebenslauf erstellen";
+      document.getElementById('bewerbungFields').style.display='none';
+      document.getElementById('lebenslaufFields').style.display='block';
+      window.currentMode="lebenslauf";
+    }else{
+      document.getElementById('formTitle').innerText="Bewerbung erstellen";
+      document.getElementById('bewerbungFields').style.display='block';
+      document.getElementById('lebenslaufFields').style.display='none';
+      window.currentMode="bewerbung";
+    }
+  }
+
+  // ===== дата =====
+  window.onload=function(){
+    const today=new Date();
+    const day=String(today.getDate()).padStart(2,'0');
+    const month=String(today.getMonth()+1).padStart(2,'0');
+    const year=today.getFullYear();
+    const dateEl = document.getElementById('date');
+    if(dateEl) dateEl.value=`${day}.${month}.${year}`;
+  }
+ // ===== Слушатели кнопок =====
+    document.getElementById("downloadBewerbungBtn").addEventListener("click", function(){
+      window.currentMode = "bewerbung";
+      generatePDF();
+    });
+// ===== Bewerbungs текст =====
+function generateRandomBewerbung(jobTitle, personalName, practiceType){
+    const templates = [
+        {
+            title: `Bewerbung um die Stelle als ${practiceType}`,
+            body: `Sehr geehrte Damen und Herren,
+
+Hiermit bewerbe ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen. Die Möglichkeit, in Ihrem Unternehmen tätig zu sein, interessiert mich sehr, da ich gerne praktische Erfahrungen sammeln und meine Fähigkeiten weiterentwickeln möchte.
+
+Ich arbeite zielstrebig, zuverlässig und mit großer Sorgfalt. Neue Aufgaben sehe ich als Chance, etwas Neues zu lernen und mich persönlich sowie fachlich weiterzuentwickeln. In der Schule habe ich gelernt, strukturiert zu arbeiten, Verantwortung für meine Aufgaben zu übernehmen und auch in stressigen Situationen den Überblick zu behalten.
+
+Darüber hinaus bin ich belastbar, hilfsbereit und arbeite gerne mit anderen Menschen zusammen. Teamarbeit ist für mich sehr wichtig, da man gemeinsam oft bessere Ergebnisse erreichen kann. Gleichzeitig bin ich in der Lage, Aufgaben selbstständig und verantwortungsbewusst zu erledigen. Pünktlichkeit, Zuverlässigkeit und ein respektvoller Umgang mit anderen sind für mich selbstverständlich.
+
+Durch schulische Projekte und praktische Erfahrungen habe ich gelernt, mich schnell an neue Situationen anzupassen und motiviert an neue Herausforderungen heranzugehen. Ich bin stets bereit, mein Bestes zu geben und neue Kenntnisse zu erwerben.
+
+Ich würde mich sehr freuen, meine Motivation und Einsatzbereitschaft in Ihr Unternehmen einzubringen und gleichzeitig wertvolle Einblicke in die Arbeitswelt zu erhalten.
+
+Über eine positive Rückmeldung und die Möglichkeit, mich persönlich bei Ihnen vorzustellen, freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+        },
+        {
+    title: `Bewerbung um die Position als ${practiceType} – Engagement und Teamfähigkeit`,
+    body: `Sehr geehrte Damen und Herren,
+
+die Position als "${practiceType}" spricht mich besonders an, da sie mir die Möglichkeit bietet, meine Fähigkeiten optimal einzubringen und mich fachlich weiterzuentwickeln. Ich habe bereits wertvolle Erfahrungen in den Bereichen Organisation, Projektmanagement und Kundenkommunikation gesammelt, die ich nun gezielt in Ihrem Unternehmen einsetzen möchte.
+
+Ich zeichne mich durch Verantwortungsbewusstsein, Engagement und Teamfähigkeit aus. Gleichzeitig arbeite ich eigenständig, strukturiert und lösungsorientiert. Meine Flexibilität und Lernbereitschaft ermöglichen es mir, mich schnell in neue Aufgabenfelder einzuarbeiten und effizient zum Unternehmenserfolg beizutragen.
+
+Besonders wichtig ist mir, meine theoretischen Kenntnisse praxisnah anzuwenden und kontinuierlich auszubauen. Ich bin motiviert, aktiv neue Herausforderungen anzunehmen und Verantwortung zu übernehmen. Durch meine offene und kommunikative Art integriere ich mich schnell in Teams und trage zu einem positiven Arbeitsklima bei.
+
+Gerne würde ich Sie in einem persönlichen Gespräch von meiner Motivation, meinen Fähigkeiten und meinem Engagement überzeugen. Ich freue mich auf die Gelegenheit, mich Ihnen näher vorzustellen und gemeinsam über meine möglichen Beiträge zu Ihrem Unternehmen zu sprechen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung als ${practiceType} – Motivation und Zuverlässigkeit`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich erfahren, dass Sie eine Stelle als "${practiceType}" anbieten. Hiermit möchte ich mich dafür bewerben.
+
+Ich bin eine motivierte und verantwortungsbewusste Person, die großen Wert auf Zuverlässigkeit und Genauigkeit legt.
+
+Besonders wichtig sind mir Pünktlichkeit, Lernbereitschaft und ein respektvoller Umgang miteinander. Ich bin bereit, mich schnell in neue Aufgabenbereiche einzuarbeiten und mein Bestes für Ihr Unternehmen zu geben.
+
+Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Stelle als ${practiceType} – Zielstrebigkeit und Engagement`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit möchte ich mich um die Stelle als "${practiceType}" bewerben.
+
+Ich zeichne mich durch eine zielstrebige und sorgfältige Arbeitsweise aus. Neue Aufgaben motivieren mich, da ich mich gerne weiterentwickle und Verantwortung übernehme. In der Schule sowie bei praktischen Tätigkeiten habe ich gelernt, strukturiert zu arbeiten und auch unter Zeitdruck den Überblick zu behalten.
+
+Ich bin belastbar, hilfsbereit und arbeite sowohl selbstständig als auch im Team effektiv. Es ist mir wichtig, zuverlässig zu sein und vereinbarte Aufgaben termingerecht zu erfüllen. Gerne möchte ich meine Fähigkeiten in Ihrem Unternehmen einbringen und weiter ausbauen.
+
+Über eine positive Rückmeldung und die Möglichkeit eines persönlichen Gesprächs freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Interesse an der Position als ${practiceType} – Konzentration und Verantwortungsbewusstsein`,
+    body: `Sehr geehrte Damen und Herren,
+
+auf diesem Weg möchte ich mein Interesse an der Stelle als "${practiceType}" in Ihrem Unternehmen zum Ausdruck bringen.
+
+Ich arbeite konzentriert, verantwortungsbewusst und mit klarer Zielorientierung. Aufgaben gehe ich strukturiert an und bemühe mich stets, qualitativ gute Ergebnisse zu erzielen. Dabei ist es für mich selbstverständlich, zuverlässig zu handeln und Absprachen einzuhalten. Neue Herausforderungen sehe ich als Chance, meine Kenntnisse zu erweitern und mich persönlich weiterzuentwickeln.
+
+Durch meine offene und respektvolle Art integriere ich mich schnell in ein Team und trage zu einer angenehmen Zusammenarbeit bei. Gleichzeitig bin ich in der Lage, eigenständig Entscheidungen zu treffen und Verantwortung zu übernehmen.
+
+Gerne würde ich Sie in einem persönlichen Gespräch von meiner Motivation überzeugen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Position als ${practiceType} – Engagement und Lernbereitschaft`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit großem Interesse bewerbe ich mich bei Ihnen um die Position als "${practiceType}".
+
+Ich bin eine engagierte und lernbereite Persönlichkeit, die ihre Aufgaben mit Sorgfalt und Verantwortungsbewusstsein erfüllt. Eine zuverlässige und genaue Arbeitsweise ist für mich selbstverständlich. Dabei lege ich Wert auf klare Kommunikation und eine konstruktive Zusammenarbeit im Team.
+
+Besonders motiviert mich die Möglichkeit, praktische Erfahrungen zu sammeln und meine Fähigkeiten weiterzuentwickeln. Ich arbeite selbstständig, bleibe auch in anspruchsvollen Situationen ruhig und verliere meine Ziele nicht aus dem Blick.
+
+Über die Gelegenheit, mich persönlich bei Ihnen vorzustellen, würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Motivierte Bewerbung als ${practiceType} – Zuverlässigkeit und Engagement`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit übersende ich Ihnen meine Bewerbung für die Stelle als "${practiceType}".
+
+Ich bin motiviert, leistungsbereit und stets daran interessiert, meine Fähigkeiten weiterzuentwickeln. Aufgaben übernehme ich mit Verantwortungsbewusstsein und erledige sie sorgfältig sowie termingerecht. Eine strukturierte Planung und ein effizientes Arbeiten sind für mich selbstverständlich.
+
+Durch meine offene Art finde ich mich schnell in neue Teams ein und schätze eine respektvolle Zusammenarbeit. Gleichzeitig arbeite ich selbstständig und behalte auch bei mehreren Aufgaben den Überblick. Mein Ziel ist es, aktiv zum Erfolg Ihres Unternehmens beizutragen und dabei wertvolle praktische Erfahrungen zu sammeln.
+
+Gerne erläutere ich meine Motivation in einem persönlichen Gespräch näher.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Zuverlässige und zielorientierte Bewerbung als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit bewerbe ich mich um die Position als "${practiceType}" in Ihrem Unternehmen.
+
+Ich bin eine zuverlässige und zielorientierte Person, die großen Wert auf Genauigkeit und Einsatzbereitschaft legt. Neue Aufgaben nehme ich mit Motivation an und arbeite mich schnell in unbekannte Themen ein. Dabei handle ich stets verantwortungsvoll und organisiert.
+
+Ein respektvolles Auftreten sowie Teamfähigkeit sind für mich selbstverständlich. Gleichzeitig arbeite ich konzentriert und selbstständig, um gesetzte Ziele effizient zu erreichen. Es motiviert mich, aktiv zum Erfolg Ihres Unternehmens beizutragen und mich fachlich wie persönlich weiterzuentwickeln.
+
+Über eine Einladung zu einem persönlichen Gespräch freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Motivierte Bewerbung um die Stelle als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit diesem Schreiben möchte ich mich für die Stelle als "${practiceType}" in Ihrem Unternehmen vorstellen.
+
+Ich arbeite gewissenhaft, diszipliniert und mit hoher Einsatzbereitschaft. Mir ist es wichtig, Aufgaben nicht nur zu erfüllen, sondern sie zuverlässig und sorgfältig umzusetzen. Herausforderungen motivieren mich besonders, da ich dadurch meine Fähigkeiten erweitern und neue Erfahrungen sammeln kann.
+
+Ich bin teamorientiert, respektvoll im Umgang mit anderen und gleichzeitig in der Lage, selbstständig Verantwortung zu übernehmen. Pünktlichkeit und Verlässlichkeit sehe ich als grundlegende Voraussetzungen für eine erfolgreiche Zusammenarbeit.
+
+Gerne würde ich meine Motivation und meine Stärken in einem persönlichen Gespräch näher erläutern.
+
+Mit freundlichen Grüßen,                   
+${personalName}`
+},
+{
+    title: `Bewerbung um die Stelle als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren, 
+
+Hiermit bewerbe ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen.
+
+Ich arbeite zielstrebig, zuverlässig und sorgfältig. Neue Aufgaben motivieren mich besonders, da ich gerne dazulerne und mich persönlich sowie fachlich weiterentwickeln möchte. In der Schule habe ich gelernt, strukturiert zu arbeiten, Verantwortung zu übernehmen und meine Aufgaben auch unter Zeitdruck konzentriert zu erledigen.
+
+Außerdem bin ich belastbar, hilfsbereit und arbeite gerne im Team. Mir ist es wichtig, zuverlässig zu sein und vereinbarte Aufgaben pünktlich und ordentlich zu erfüllen. Durch verschiedene schulische Projekte und praktische Tätigkeiten habe ich gelernt, flexibel auf neue Situationen zu reagieren und immer mein Bestes zu geben.
+
+Ich bin sehr motiviert, meine Fähigkeiten in Ihr Unternehmen einzubringen. Gleichzeitig sehe ich diese Stelle als eine gute Möglichkeit, wertvolle Erfahrungen zu sammeln und meine Kenntnisse weiter auszubauen.
+
+Über eine positive Rückmeldung und die Möglichkeit, mich persönlich bei Ihnen vorzustellen, würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Position als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+Hiermit bewerbe ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen. Durch diese Tätigkeit erhoffe ich mir, praktische Erfahrungen zu sammeln und meine Fähigkeiten weiterzuentwickeln.
+
+Ich arbeite zielstrebig, zuverlässig und sorgfältig. Neue Aufgaben motivieren mich besonders, weil ich gerne dazulerne und mich sowohl persönlich als auch fachlich weiterentwickeln möchte. In der Schule habe ich gelernt, strukturiert und organisiert zu arbeiten sowie Verantwortung für meine Aufgaben zu übernehmen. Auch unter Zeitdruck versuche ich stets konzentriert zu bleiben und meine Arbeit ordentlich zu erledigen.
+
+Darüber hinaus bin ich teamfähig, hilfsbereit und respektvoll im Umgang mit anderen Menschen. Gleichzeitig kann ich Aufgaben auch selbstständig und verantwortungsbewusst erledigen. Es ist mir wichtig, zuverlässig zu sein und vereinbarte Aufgaben pünktlich und gewissenhaft zu erfüllen. Durch schulische Projekte sowie praktische Tätigkeiten habe ich gelernt, flexibel auf neue Situationen zu reagieren und Herausforderungen motiviert anzugehen.
+
+Ich bin überzeugt, dass ich mit meiner Motivation, Lernbereitschaft und meinem Engagement eine Unterstützung für Ihr Team sein kann. Gleichzeitig sehe ich diese Stelle als eine wertvolle Möglichkeit, Einblicke in die Arbeitswelt zu erhalten und neue Kenntnisse zu erwerben.
+
+Über eine positive Rückmeldung und die Gelegenheit zu einem persönlichen Gespräch würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Stelle als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+Hiermit bewerbe ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen. Die Möglichkeit, in Ihrem Unternehmen tätig zu sein, interessiert mich sehr, da ich gerne praktische Erfahrungen sammeln und meine Fähigkeiten weiterentwickeln möchte.
+
+Ich arbeite zielstrebig, zuverlässig und mit großer Sorgfalt. Neue Aufgaben sehe ich als Chance, etwas Neues zu lernen und mich persönlich sowie fachlich weiterzuentwickeln. In der Schule habe ich gelernt, strukturiert zu arbeiten, Verantwortung für meine Aufgaben zu übernehmen und auch in stressigen Situationen den Überblick zu behalten.
+
+Darüber hinaus bin ich belastbar, hilfsbereit und arbeite gerne mit anderen Menschen zusammen. Teamarbeit ist für mich sehr wichtig, da man gemeinsam oft bessere Ergebnisse erreichen kann. Gleichzeitig bin ich in der Lage, Aufgaben selbstständig und verantwortungsbewusst zu erledigen. Pünktlichkeit, Zuverlässigkeit und ein respektvoller Umgang mit anderen sind für mich selbstverständlich.
+
+Durch schulische Projekte und praktische Erfahrungen habe ich gelernt, mich schnell an neue Situationen anzupassen und motiviert an neue Herausforderungen heranzugehen. Ich bin stets bereit, mein Bestes zu geben und neue Kenntnisse zu erwerben.
+
+Ich würde mich sehr freuen, meine Motivation und Einsatzbereitschaft in Ihr Unternehmen einzubringen und gleichzeitig wertvolle Einblicke in die Arbeitswelt zu erhalten.
+
+Über eine positive Rückmeldung und die Möglichkeit, mich persönlich bei Ihnen vorzustellen, freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Stelle als ${practiceType}´`,
+    body: `Sehr geehrte Damen und Herren,
+
+Hiermit bewerbe ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen. Ihr Unternehmen spricht mich besonders an, da ich sehr daran interessiert bin, praktische Erfahrungen zu sammeln und meine Fähigkeiten in einem professionellen Umfeld weiterzuentwickeln.
+
+Ich arbeite zielstrebig, zuverlässig und mit großer Sorgfalt. Neue Aufgaben und Herausforderungen motivieren mich sehr, da ich gerne Neues lerne und mich kontinuierlich verbessern möchte. In der Schule habe ich gelernt, strukturiert und organisiert zu arbeiten sowie Verantwortung für meine Aufgaben zu übernehmen. Auch unter Zeitdruck versuche ich stets konzentriert zu bleiben und meine Arbeit ordentlich und gewissenhaft zu erledigen.
+
+Außerdem bin ich eine offene, hilfsbereite und teamfähige Person. Die Zusammenarbeit mit anderen Menschen bereitet mir große Freude, da man gemeinsam oft schneller Lösungen findet und voneinander lernen kann. Gleichzeitig bin ich in der Lage, Aufgaben selbstständig zu bearbeiten und Verantwortung zu übernehmen. Pünktlichkeit, Zuverlässigkeit und ein respektvoller Umgang mit anderen sind für mich selbstverständlich.
+
+Durch verschiedene schulische Projekte sowie praktische Tätigkeiten konnte ich bereits erste Erfahrungen sammeln und lernen, flexibel auf neue Situationen zu reagieren. Dabei ist es mir wichtig, stets motiviert zu bleiben und mein Bestes zu geben.
+
+Ich bin überzeugt, dass ich mit meiner Motivation, meiner Lernbereitschaft und meinem Engagement eine gute Unterstützung für Ihr Team sein kann. Gleichzeitig sehe ich diese Stelle als eine wertvolle Möglichkeit, neue Erfahrungen zu sammeln und mich sowohl persönlich als auch beruflich weiterzuentwickeln.
+
+Über eine positive Rückmeldung und die Gelegenheit zu einem persönlichen Gespräch würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung für die Position als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+Hiermit möchte ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen bewerben. Die ausgeschriebene Position spricht mich besonders an, da ich die Chance sehe, neue Erfahrungen zu sammeln und meine Fähigkeiten praktisch einzusetzen.
+
+Ich bin eine engagierte und lernbereite Person. In der Schule habe ich gelernt, organisiert und sorgfältig zu arbeiten, Aufgaben termingerecht zu erledigen und auch unter Druck den Überblick zu behalten. Neue Herausforderungen motivieren mich, weil ich dabei die Möglichkeit habe, mich weiterzuentwickeln und Verantwortung zu übernehmen.
+
+Teamarbeit macht mir großen Spaß, da ich den Austausch mit anderen Menschen schätze und überzeugt bin, dass man gemeinsam bessere Ergebnisse erzielen kann. Gleichzeitig bin ich in der Lage, Aufgaben selbstständig und zuverlässig zu erledigen. Freundlichkeit, Hilfsbereitschaft und Pünktlichkeit gehören zu meinen Stärken.
+
+Ich bin sehr daran interessiert, meine Motivation, Einsatzbereitschaft und Lernbereitschaft in Ihr Unternehmen einzubringen. Gleichzeitig möchte ich diese Gelegenheit nutzen, um praktische Erfahrungen zu sammeln und meine Kenntnisse weiter auszubauen.
+
+Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Position als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als "${practiceType}" gelesen. Ich möchte mich hiermit um diese Stelle bewerben, da sie mir die Möglichkeit bietet, meine Kenntnisse und Fähigkeiten optimal einzubringen und weiterzuentwickeln.
+
+Ich arbeite sorgfältig, zuverlässig und zielorientiert. Neue Aufgaben motivieren mich, da ich gerne lerne und mich sowohl persönlich als auch fachlich weiterentwickeln möchte. Während meiner schulischen und praktischen Erfahrungen habe ich gelernt, strukturiert zu arbeiten, Verantwortung zu übernehmen und sowohl eigenständig als auch im Team effizient zu agieren.
+
+Besonders wichtig sind mir Pünktlichkeit, Teamarbeit und ein respektvoller Umgang mit anderen Menschen. Ich bin überzeugt, dass ich durch meine Motivation, Lernbereitschaft und Einsatzbereitschaft Ihr Team bereichern kann.
+
+Über die Gelegenheit, mich persönlich bei Ihnen vorzustellen, würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit möchte ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen bewerben. Die ausgeschriebene Position hat mein Interesse geweckt, da ich die Möglichkeit sehe, praktische Erfahrungen zu sammeln und meine Fähigkeiten gezielt einzubringen.
+
+Ich arbeite zuverlässig, strukturiert und engagiert. Neue Aufgaben motivieren mich besonders, da ich stets bestrebt bin, mich fachlich und persönlich weiterzuentwickeln. Während meiner schulischen und praktischen Tätigkeiten habe ich gelernt, Aufgaben gewissenhaft und eigenverantwortlich zu erledigen sowie effektiv im Team zusammenzuarbeiten.
+
+Meine Stärken liegen in meiner Lernbereitschaft, Belastbarkeit und meinem respektvollen Umgang mit Kollegen. Ich bin überzeugt, dass ich Ihr Team tatkräftig unterstützen und einen positiven Beitrag leisten kann.
+
+Über eine Einladung zu einem persönlichen Gespräch freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Motivationsschreiben für ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit bewerbe ich mich um die Stelle als "${practiceType}" in Ihrem Unternehmen. Die ausgeschriebene Position spricht mich besonders an, da ich die Chance sehe, neue Erfahrungen zu sammeln und meine Fähigkeiten praktisch einzusetzen.
+
+Ich bin eine engagierte und lernbereite Person.
+
+Teamarbeit macht mir großen Spaß, da ich den Austausch mit anderen Menschen schätze und überzeugt bin, dass man gemeinsam bessere Ergebnisse erzielen kann. Gleichzeitig bin ich in der Lage, Aufgaben selbstständig und zuverlässig zu erledigen. Freundlichkeit, Hilfsbereitschaft und Pünktlichkeit gehören zu meinen Stärken.
+
+Ich bin sehr daran interessiert, meine Motivation, Einsatzbereitschaft und Lernbereitschaft in Ihr Unternehmen einzubringen. Gleichzeitig möchte ich diese Gelegenheit nutzen, um praktische Erfahrungen zu sammeln und meine Kenntnisse weiter auszubauen.
+
+Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Position als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als "${practiceType}" gelesen. Gerne möchte ich die Gelegenheit nutzen, mich Ihnen als motivierten und engagierten Bewerber vorzustellen.
+
+Ich bringe fundierte Kenntnisse sowie praktische Erfahrungen mit, die ich gewinnbringend in Ihrem Unternehmen einsetzen möchte. 
+
+Darüber hinaus zeichne ich mich durch Lernbereitschaft, Belastbarkeit und ein hohes Maß an Zuverlässigkeit aus. Neue Aufgabenfelder motivieren mich, da ich mich kontinuierlich weiterentwickeln und meine Kompetenzen erweitern möchte. Ich bin überzeugt, dass ich Ihr Team fachlich wie auch persönlich bereichern kann.
+
+Über eine Einladung zu einem persönlichen Gespräch freue ich mich sehr, um Sie von meiner Motivation und meinen Fähigkeiten zu überzeugen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Hiermit bewerbe ich mich als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+die Position als "${practiceType}" spricht mich besonders an, da sie mir die Möglichkeit bietet, meine Fähigkeiten optimal einzubringen und mich fachlich weiterzuentwickeln. Ich habe bereits wertvolle Erfahrungen in den Bereichen Organisation, Projektmanagement und Kundenkommunikation gesammelt, die ich nun gezielt in Ihrem Unternehmen einsetzen möchte.
+
+Ich zeichne mich durch Verantwortungsbewusstsein, Engagement und Teamfähigkeit aus. Gleichzeitig arbeite ich eigenständig, strukturiert und lösungsorientiert. Meine Flexibilität und Lernbereitschaft ermöglichen es mir, mich schnell in neue Aufgabenfelder einzuarbeiten und effizient zum Unternehmenserfolg beizutragen.
+
+Besonders wichtig ist mir, meine theoretischen Kenntnisse praxisnah anzuwenden und kontinuierlich auszubauen. Ich bin motiviert, aktiv neue Herausforderungen anzunehmen und Verantwortung zu übernehmen. Durch meine offene und kommunikative Art integriere ich mich schnell in Teams und trage zu einem positiven Arbeitsklima bei.
+
+Gerne würde ich Sie in einem persönlichen Gespräch von meiner Motivation, meinen Fähigkeiten und meinem Engagement überzeugen. Ich freue mich auf die Gelegenheit, mich Ihnen näher vorzustellen und gemeinsam über meine möglichen Beiträge zu Ihrem Unternehmen zu sprechen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Stelle als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich erfahren, dass Sie eine Stelle als "${practiceType}" anbieten. Hiermit möchte ich mich dafür bewerben.
+
+Ich bin eine motivierte und verantwortungsbewusste Person, die großen Wert auf Zuverlässigkeit und Genauigkeit legt. Durch meine bisherigen schulischen und praktischen Erfahrungen habe ich gelernt, selbstständig zu arbeiten und Aufgaben gewissenhaft zu erledigen. Teamarbeit ist für mich selbstverständlich, da ich gerne mit anderen zusammenarbeite und aktiv zum gemeinsamen Erfolg beitrage.
+
+Besonders wichtig sind mir Pünktlichkeit, Lernbereitschaft und ein respektvoller Umgang miteinander. Ich bin bereit, mich schnell in neue Aufgabenbereiche einzuarbeiten und mein Bestes für Ihr Unternehmen zu geben.
+
+Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Hiermit bewerbe ich mich als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit möchte ich mich um die Stelle als "${practiceType}" bewerben.
+
+Ich zeichne mich durch eine zielstrebige und sorgfältige Arbeitsweise aus. Neue Aufgaben motivieren mich, da ich mich gerne weiterentwickle und Verantwortung übernehme. In der Schule sowie bei praktischen Tätigkeiten habe ich gelernt, strukturiert zu arbeiten und auch unter Zeitdruck den Überblick zu behalten.
+
+Ich bin belastbar, hilfsbereit und arbeite sowohl selbstständig als auch im Team effektiv. Es ist mir wichtig, zuverlässig zu sein und vereinbarte Aufgaben termingerecht zu erfüllen. Gerne möchte ich meine Fähigkeiten in Ihrem Unternehmen einbringen und weiter ausbauen.
+
+Über eine positive Rückmeldung und die Möglichkeit eines persönlichen Gesprächs freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+auf diesem Weg möchte ich mein Interesse an der Stelle als "${practiceType}" in Ihrem Unternehmen zum Ausdruck bringen.
+
+Ich arbeite konzentriert, verantwortungsbewusst und mit klarer Zielorientierung.
+
+Durch meine offene und respektvolle Art integriere ich mich schnell in ein Team und trage zu einer angenehmen Zusammenarbeit bei. Gleichzeitig bin ich in der Lage, eigenständig Entscheidungen zu treffen und Verantwortung zu übernehmen.
+
+Gerne würde ich Sie in einem persönlichen Gespräch von meiner Motivation überzeugen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Position als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit großem Interesse bewerbe ich mich bei Ihnen um die Position als "${practiceType}".
+
+Ich bin eine engagierte und lernbereite Persönlichkeit, die ihre Aufgaben mit Sorgfalt und Verantwortungsbewusstsein erfüllt. Eine zuverlässige und genaue Arbeitsweise ist für mich selbstverständlich. Dabei lege ich Wert auf klare Kommunikation und eine konstruktive Zusammenarbeit im Team.
+
+Besonders motiviert mich die Möglichkeit, praktische Erfahrungen zu sammeln und meine Fähigkeiten weiterzuentwickeln. Ich arbeite selbstständig, bleibe auch in anspruchsvollen Situationen ruhig und verliere meine Ziele nicht aus dem Blick.
+
+Über die Gelegenheit, mich persönlich bei Ihnen vorzustellen, würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Meine Bewerbung für die Stelle als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit übersende ich Ihnen meine Bewerbung für die Stelle als "${practiceType}".
+
+Ich bin motiviert, leistungsbereit und stets daran interessiert, meine Fähigkeiten weiterzuentwickeln. Aufgaben übernehme ich mit Verantwortungsbewusstsein und erledige sie sorgfältig sowie termingerecht. Eine strukturierte Planung und ein effizientes Arbeiten sind für mich selbstverständlich.
+
+Durch meine offene Art finde ich mich schnell in neue Teams ein und schätze eine respektvolle Zusammenarbeit. Gleichzeitig arbeite ich selbstständig und behalte auch bei mehreren Aufgaben den Überblick. Mein Ziel ist es, aktiv zum Erfolg Ihres Unternehmens beizutragen und dabei wertvolle praktische Erfahrungen zu sammeln.
+
+Gerne erläutere ich meine Motivation in einem persönlichen Gespräch näher.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Bewerbung um die Position als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+hiermit bewerbe ich mich um die Position als "${practiceType}" in Ihrem Unternehmen.
+
+Ich bin eine zuverlässige und zielorientierte Person, die großen Wert auf Genauigkeit und Einsatzbereitschaft legt. Neue Aufgaben nehme ich mit Motivation an und arbeite mich schnell in unbekannte Themen ein. Dabei handle ich stets verantwortungsvoll und organisiert.
+
+Ein respektvolles Auftreten sowie Teamfähigkeit sind für mich selbstverständlich. Gleichzeitig arbeite ich konzentriert und selbstständig, um gesetzte Ziele effizient zu erreichen. Es motiviert mich, aktiv zum Erfolg Ihres Unternehmens beizutragen und mich fachlich wie persönlich weiterzuentwickeln.
+
+Über eine Einladung zu einem persönlichen Gespräch freue ich mich sehr.
+
+Mit freundlichen Grüßen,
+${personalName}`
+},
+{
+    title: `Motivationsschreiben für die Stelle als ${practiceType}`,
+    body: `Sehr geehrte Damen und Herren,
+
+mit diesem Schreiben möchte ich mich für die Stelle als "${practiceType}" in Ihrem Unternehmen vorstellen.
+
+Ich arbeite gewissenhaft, diszipliniert und mit hoher Einsatzbereitschaft. Mir ist es wichtig, Aufgaben nicht nur zu erfüllen, sondern sie zuverlässig und sorgfältig umzusetzen. Herausforderungen motivieren mich besonders, da ich dadurch meine Fähigkeiten erweitern und neue Erfahrungen sammeln kann.
+
+Ich bin teamorientiert, respektvoll im Umgang mit anderen und gleichzeitig in der Lage, selbstständig Verantwortung zu übernehmen. Pünktlichkeit und Verlässlichkeit sehe ich als grundlegende Voraussetzungen für eine erfolgreiche Zusammenarbeit.
+
+Gerne würde ich meine Motivation und meine Stärken in einem persönlichen Gespräch näher erläutern.
+
+Mit freundlichen Grüßen,                   
+${personalName}`
+}
+
+    ];
+
+    return templates[Math.floor(Math.random() * templates.length)];
+}
+
+// ===== PDF =====
+// ===== PDF =====
+function generatePDF(){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+
+  if(window.currentMode==="lebenslauf"){
+
+    doc.setFontSize(20);
+    doc.setFont("helvetica","bold");
+    doc.text("Lebenslauf",105,20,null,null,"center");
+
+    // колонки
+    let leftX=20, rightX=110;
+    let leftY=40, rightY=40;
+
+    // Собираем дату рождения из трёх полей
+    const cvBirth = `${cvBirthDay.value}.${cvBirthMonth.value}.${cvBirthYear.value}`;
+
+    // левая колонка
+    const left=[
+      `Name: ${cvName.value}`,
+      `Geburtsdatum: ${cvBirth}`,
+      `Geburtsort: ${cvBirthPlace.value}`,
+      `Adresse: ${cvAddress.value}`,
+      `Telefon: ${cvPhone.value}`,
+      `Email: ${cvEmail.value}`
+    ];
+
+    doc.setFont("helvetica","normal");
+    left.forEach(t=>{
+      let lines=doc.splitTextToSize(t,80);
+      doc.text(lines,leftX,leftY);
+      leftY+=lines.length*7;
+    });
+
+    // правая колонка
+    const right=[
+      ["Schule",cvSchool.value],
+      ["Erfahrungen",cvExperience.value],
+      ["Fähigkeiten",cvSkills.value],
+      ["Sprachen",cvLanguages.value],
+      ["Stärken",cvStrengths.value],
+      ["Hobbys",cvHobbies.value]
+    ];
+
+    right.forEach(([title,val])=>{
+      doc.setFont("helvetica","bold");
+      doc.text(title+":",rightX,rightY);
+      rightY+=6;
+
+      doc.setFont("helvetica","normal");
+      let lines=doc.splitTextToSize(val,80);
+      doc.text(lines,rightX,rightY);
+      rightY+=lines.length*7+5;
+    });
+
+    doc.save("Lebenslauf_Pro.pdf");
+    return;
+  }
+
+  // ===== Bewerbung =====
+  let y=20;
+
+  const company=companyName.value+"\n"+companyStreet.value+"\n"+companyEmail.value;
+  doc.setFont("helvetica","bold");
+  doc.text(company,20,y); y+=30;
+
+  doc.setFont("helvetica","normal");
+  const personal=personalName.value+"\n"+personalAddress.value+"\n"+personalPhone.value+"\n"+personalEmail.value;
+  doc.text(personal,20,y); y+=30;
+
+  doc.text(place.value+", "+date.value,20,y); y+=10;
+
+  doc.setFont("helvetica","bold");
+  doc.text("Bewerbung "+jobTitle.value,20,y); y+=10;
+
+  const b=generateRandomBewerbung(jobTitle.value,personalName.value,practiceType.value);
+
+  doc.text(b.title,20,y); y+=10;
+
+  doc.setFont("helvetica","normal");
+  doc.text(doc.splitTextToSize(b.body,170),20,y);
+
+  doc.save("Bewerbung.pdf");
+}
+</script>
+
+</body>
+</html>
