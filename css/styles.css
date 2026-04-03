@@ -1,0 +1,666 @@
+/* --- Дизайн-токены (значения по умолчанию для светлой темы) --- */
+:root {
+    /* Поверхности и текст */
+    --color-bg: #f2f2f2;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+    --color-border-focus: #1a73e8;
+    --color-text: #0f172a;
+    --color-text-muted: #64748b;
+
+    /* Действия */
+    --color-primary: #1a73e8;
+    --color-primary-hover: #1558b0;
+
+    /* Семантические */
+    --color-error: #dc2626;
+    --color-warn: #ea580c;
+
+    /* Мастер шагов */
+    --color-wizard-track: #e2e8f0;
+    --color-wizard-bar: #1a73e8;
+
+    /* Акцент кнопок выбора */
+    --color-choice-border-hover: #1a73e8;
+    --color-choice-bg-hover: #eff6ff;
+    --color-choice-icon: #1a73e8;
+    /* На светлом фоне при наведении (#eff6ff) используем тёмно-синий
+       для достаточного контраста текста и иконки. */
+    --color-choice-text-hover: #1558b0;
+    --color-choice-icon-hover: #1558b0;
+
+    /* Свечение кольца фокуса */
+    --shadow-focus: rgba(26, 115, 232, 0.15);
+
+    /* Типографика - 4 ступени масштаба */
+    --font-sm: 0.833rem; /* метки, подписи, счётчики */
+    --font-base: 1rem; /* тело, поля, кнопки */
+    --font-lg: 1.2rem; /* легенды шагов, заголовки карт */
+    --font-xl: 1.5rem; /* заголовок сайта */
+
+    /* Отступы - сетка по 8 pt */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+
+    /* Форма */
+    --radius-card: 0.75rem;
+    --radius-input: 0.375rem;
+    --radius-btn: 999px;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 16px rgba(0, 0, 0, .06);
+    --shadow-choice-hover: 0 0 0 3px var(--shadow-focus);
+
+    /* Мастер шагов */
+    --wizard-bar-height: 0.375rem;
+}
+
+/* --- Тёмная тема ---
+   Поверхности: чёрный фон -> сгруппированный -> приподнятый.
+   Акцент:  системный синий в тёмном режиме (#0a84ff) - та же тональность,
+            но выше яркость для сохранения контраста на тёмном фоне.
+   Текст:   первичный (#ffffff) и вторичный (rgba 60 % белый).
+   Границы: непрозрачный разделитель (#38383a) - нейтрально-тёплый.
+*/
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Поверхности */
+        --color-bg: #000000;
+        --color-surface: #1c1c1e;
+        --color-border: #38383a;
+
+        /* Текст */
+        --color-text: #ffffff;
+        --color-text-muted: rgba(235, 235, 245, 0.6);
+
+        /* Действия */
+        --color-primary: #0a84ff;
+        --color-primary-hover: #0071e3;
+        --color-border-focus: #0a84ff;
+        --color-wizard-bar: #0a84ff;
+        --color-choice-border-hover: #0a84ff;
+        --color-choice-icon: #0a84ff;
+        /* На тёмном фоне при наведении белый текст и яркая синяя иконка
+           хорошо контрастируют - оставляем значения как в состоянии покоя. */
+        --color-choice-text-hover: #ffffff;
+        --color-choice-icon-hover: #0a84ff;
+
+        /* Кольцо фокуса - синий при 40 % прозрачности на тёмном фоне */
+        --shadow-focus: rgba(10, 132, 255, 0.4);
+
+        /* Мастер */
+        --color-wizard-track: #3a3a3c;
+
+        /* Оттенок при наведении на кнопку выбора */
+        --color-choice-bg-hover: rgba(10, 132, 255, 0.08);
+
+        /* Тень карты на чёрном фоне не нужна */
+        --shadow-card: none;
+    }
+}
+
+/* --- Базовые стили --- */
+html {
+    /* Базовый размер 18 px: все rem-значения масштабируются ~+12,5 %
+       относительно браузерного умолчания, обеспечивая комфортный размер
+       элементов без искажения пропорций. */
+    font-size: 18px;
+    scroll-behavior: smooth;
+    color-scheme: light dark;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    /* Стек системных шрифтов: нативный вид на каждой платформе без внешних запросов */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: var(--font-base);
+    line-height: 1.6;
+    background: var(--color-bg);
+    margin: 0;
+    padding: 0;
+    color: var(--color-text);
+}
+
+/* --- Шапка сайта - тонкая полоса, всегда над секциями --- */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-lg);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    .site-header {
+        background: rgba(28, 28, 30, 0.72);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+}
+
+.site-title {
+    font-size: var(--font-base);
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+}
+
+/* --- Секции-герои --- */
+#welcome {
+    display: block;
+}
+
+.hero {
+    /* Каждая секция занимает высоту viewport за вычетом шапки (~44px) */
+    min-height: calc(100svh - 44px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: clamp(3rem, 8vw, 6rem);
+    padding-bottom: 0;
+    overflow: hidden;
+    text-align: center;
+}
+
+/* Светлая секция */
+.hero--light {
+    background: #f5f5f7;
+    color: #1d1d1f;
+}
+
+/* Тёмная секция - всегда чёрная, независимо от системной темы */
+.hero--dark {
+    background: #000000;
+    color: #f5f5f7;
+}
+
+/* Фиксируем цвета секций вне зависимости от системной цветовой схемы */
+@media (prefers-color-scheme: dark) {
+    .hero--light {
+        background: #f5f5f7;
+        color: #1d1d1f;
+    }
+
+    .hero--dark {
+        background: #000000;
+        color: #f5f5f7;
+    }
+}
+
+.hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    max-width: 36rem;
+    padding: 0 var(--space-lg);
+}
+
+.hero__eyebrow {
+    font-size: var(--font-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+    opacity: 0.55;
+}
+
+.hero__title {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0;
+}
+
+.hero__subtitle {
+    font-size: clamp(var(--font-base), 2vw, var(--font-lg));
+    margin: 0;
+    opacity: 0.72;
+    line-height: 1.4;
+}
+
+/* CTA-кнопка героя - переопределяет ширину и цвет под стиль секции */
+.hero__btn {
+    margin-top: var(--space-md);
+    width: auto;
+    padding: 0.65em 1.75em;
+    font-size: var(--font-base);
+}
+
+/* Светлая секция: контурная кнопка -> заливка при наведении */
+.hero--light .hero__btn {
+    color: #1a73e8;
+    border-color: #1a73e8;
+    background: transparent;
+}
+
+.hero--light .hero__btn:hover:not(:disabled) {
+    background: #1a73e8;
+    color: #ffffff;
+    border-color: #1a73e8;
+}
+
+.hero--light .hero__btn:active:not(:disabled) {
+    background: #1558b0;
+    border-color: #1558b0;
+    color: #ffffff;
+}
+
+/* Тёмная секция: синяя контурная кнопка -> синяя заливка при наведении */
+.hero--dark .hero__btn {
+    color: #1a73e8;
+    border-color: #1a73e8;
+    background: transparent;
+}
+
+.hero--dark .hero__btn:hover:not(:disabled) {
+    background: #1a73e8;
+    color: #ffffff;
+    border-color: #1a73e8;
+}
+
+.hero--dark .hero__btn:active:not(:disabled) {
+    background: #1558b0;
+    border-color: #1558b0;
+    color: #ffffff;
+}
+
+/* Декоративная иллюстрация - занимает оставшееся вертикальное пространство */
+.hero__illustration {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    max-width: 28rem;
+    padding: var(--space-xl) var(--space-xl) 0;
+}
+
+.hero__illustration svg {
+    width: 100%;
+    height: auto;
+    max-height: 55vh;
+    display: block;
+}
+
+.hero--light .hero__illustration {
+    color: #1d1d1f;
+    opacity: 0.08;
+}
+
+.hero--dark .hero__illustration {
+    color: #f5f5f7;
+    opacity: 0.06;
+}
+
+/* --- Оболочка формы - ограниченная ширина, центрирование --- */
+#formShell {
+    max-width: 56.25rem;
+    margin: var(--space-xl) auto;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+}
+
+/* --- Карточка --- */
+.card {
+    background: var(--color-surface);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-md);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border);
+}
+
+.card__title {
+    font-size: var(--font-lg);
+    margin: 0 0 var(--space-sm);
+    color: var(--color-text);
+}
+
+.card__desc {
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-lg);
+    font-size: var(--font-sm);
+}
+
+/* --- Приветственный экран --- */
+#welcome {
+    text-align: center;
+}
+
+.choice-grid {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Кнопки выбора режима */
+.choice-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg) var(--space-xl);
+    font-size: var(--font-base);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease,
+    background 0.18s ease, color 0.18s ease, transform 0.12s ease;
+    margin-top: 0;
+    width: auto;
+    min-width: 10rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.choice-btn:hover,
+.choice-btn:focus-visible {
+    outline: none;
+    border-color: var(--color-choice-border-hover);
+    background: var(--color-choice-bg-hover);
+    color: var(--color-choice-text-hover);
+    box-shadow: var(--shadow-choice-hover);
+    transform: translateY(-2px);
+}
+
+.choice-btn:active {
+    transform: translateY(0);
+}
+
+.choice-btn__icon {
+    color: var(--color-choice-icon);
+    display: block;
+    transition: color 0.18s ease;
+}
+
+/* Цвет иконки при наведении / фокусе */
+.choice-btn:hover .choice-btn__icon,
+.choice-btn:focus-visible .choice-btn__icon {
+    color: var(--color-choice-icon-hover);
+}
+
+.choice-btn__label {
+    font-weight: 700;
+    font-size: var(--font-base);
+}
+
+.choice-btn__sub {
+    font-size: var(--font-sm);
+    color: var(--color-text-muted);
+    font-weight: normal;
+}
+
+/* --- Элементы форм --- */
+label {
+    display: block;
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-sm);
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 0.625em 0.75em;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-input);
+    font-size: var(--font-base);
+    font-family: inherit;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--shadow-focus);
+}
+
+/* Состояние ошибки (устанавливается валидацией мастера) */
+input.is-invalid,
+textarea.is-invalid,
+select.is-invalid {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 6.25rem;
+}
+
+/* --- Fieldset / legend --- */
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.step-legend {
+    font-size: var(--font-lg);
+    font-weight: bold;
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+    padding: 0;
+}
+
+/* --- Кнопки (базовый стиль) ---
+   Покой:     контурная (прозрачная заливка, синяя рамка и текст)
+   Наведение: синяя заливка, белый текст
+   Нажатие:   тёмно-синяя заливка, белый текст
+   Форма:     «таблетка» через --radius-btn = 999px
+*/
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--space-lg);
+    padding: 0.75em 1.5em;
+    font-size: var(--font-base);
+    font-family: inherit;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1.5px solid var(--color-primary);
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    gap: 0.25em;
+}
+
+button:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+}
+
+button:active:not(:disabled) {
+    background: var(--color-primary-hover);
+    color: #ffffff;
+    border-color: var(--color-primary-hover);
+}
+
+button:focus-visible {
+    outline: 3px solid var(--color-border-focus);
+    outline-offset: 2px;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- Заголовок мастера шагов --- */
+.wizard-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.wizard-header .card__title {
+    margin: 0;
+    flex: 1;
+}
+
+/* --- Кнопка «Назад» - компактная, авто-ширина, без верхнего отступа --- */
+.btn-back {
+    width: auto;
+    margin-top: 0;
+    padding: 0.45em 1em;
+    font-size: var(--font-sm);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* --- Кнопка «Далее» --- */
+.btn-next {
+    margin-top: var(--space-lg);
+}
+
+/* --- Кнопка загрузки - нижний отступ, чтобы не прижималась к границе карточки --- */
+.btn-download {
+    margin-bottom: var(--space-lg);
+}
+
+/* --- Прогресс мастера --- */
+.wizard-nav {
+    margin-bottom: var(--space-md);
+}
+
+.wizard-step-label {
+    font-size: var(--font-sm);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-sm);
+}
+
+.wizard-track {
+    height: var(--wizard-bar-height);
+    background: var(--color-wizard-track);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.wizard-bar {
+    height: 100%;
+    background: var(--color-wizard-bar);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+    width: 0;
+}
+
+/* --- Счётчики символов --- */
+.char-counter {
+    display: block;
+    text-align: right;
+    font-size: var(--font-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-xs);
+}
+
+.char-counter.counter--warn {
+    color: var(--color-warn);
+    font-weight: bold;
+}
+
+/* --- Встроенные сообщения об ошибках --- */
+.error-msg {
+    color: var(--color-error);
+    font-size: var(--font-sm);
+    margin-top: var(--space-sm);
+    margin-bottom: 0;
+}
+
+/* Баннер ошибок валидации над панелью шага */
+.step-error-msg {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--radius-input);
+    padding: var(--space-sm) var(--space-md);
+    margin-top: 0;
+    margin-bottom: var(--space-md);
+}
+
+@media (prefers-color-scheme: dark) {
+    .step-error-msg {
+        background: rgba(255, 59, 48, 0.12);
+        border-color: rgba(255, 59, 48, 0.35);
+    }
+}
+
+/* --- Двухколоночный макет Lebenslauf --- */
+.cv-columns {
+    display: flex;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-lg);
+}
+
+.cv-column {
+    flex: 1;
+    min-width: 0;
+}
+
+.cv-birth-row {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+}
+
+.cv-birth-row select {
+    flex: 1;
+}
+
+/* --- Адаптивность --- */
+@media (max-width: 48rem) {
+    .card {
+        padding: var(--space-md);
+    }
+
+    #formShell {
+        margin: var(--space-md) auto;
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+    }
+
+    .hero {
+        padding-top: clamp(2rem, 6vw, 3.5rem);
+    }
+
+    .cv-columns {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .wizard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-back {
+        align-self: flex-start;
+    }
+}
