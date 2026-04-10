@@ -7,7 +7,7 @@ function val(id) {
     return (document.getElementById(id)?.value ?? '').trim();
 }
 
-function checkPageBreak(doc, y) {
+function checkPage(doc, y) {
     if (y > PAGE_HEIGHT - MARGIN_BOTTOM) {
         doc.addPage();
         return 25;
@@ -15,48 +15,45 @@ function checkPageBreak(doc, y) {
     return y;
 }
 
-function writeSectionTitle(doc, title, y) {
-    y = checkPageBreak(doc, y);
+function section(doc, title, y) {
+    y = checkPage(doc, y);
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
+    doc.setFontSize(15);
     doc.text(title, 20, y);
 
-    doc.setDrawColor(0);
-    doc.setLineWidth(0.5);
+    doc.setLineWidth(0.6);
     doc.line(20, y + 2, 190, y + 2);
 
     return y + 10;
 }
 
-function writeText(doc, text, y) {
-    const lineHeight = 6;
-    const lines = doc.splitTextToSize(text || '–', 170);
-
+function text(doc, value, y) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(11);
 
+    const lines = doc.splitTextToSize(value || '–', 170);
+
     for (const line of lines) {
-        y = checkPageBreak(doc, y);
+        y = checkPage(doc, y);
         doc.text(line, 20, y);
-        y += lineHeight;
+        y += 6;
     }
 
     return y + 4;
 }
 
-function writeList(doc, text, y) {
-    const items = (text || '').split('\n');
+function bulletList(doc, value, y) {
+    const items = (value || '').split('\n');
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
 
     for (const item of items) {
         if (!item.trim()) continue;
 
-        y = checkPageBreak(doc, y);
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11);
-
-        doc.text('• ' + item.trim(), 22, y);
+        y = checkPage(doc, y);
+        doc.text(`• ${item.trim()}`, 22, y);
         y += 6;
     }
 
@@ -75,9 +72,9 @@ export function generateLebenslaufPDF(btn) {
 
         let y = 25;
 
-        // ===== HEADER =====
+        // ===== HEADER (PROFESSIONELL) =====
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(22);
+        doc.setFontSize(24);
         doc.text(val('cvName') || 'Max Mustermann', 20, y);
 
         y += 8;
@@ -85,61 +82,66 @@ export function generateLebenslaufPDF(btn) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(11);
 
-        const contactLine = [
+        const contact = [
             val('cvAddress'),
             val('cvPhone'),
             val('cvEmail')
-        ].filter(Boolean).join(' | ');
+        ].filter(Boolean).join('  |  ');
 
-        doc.text(contactLine, 20, y);
+        doc.text(contact, 20, y);
 
-        y += 15;
+        y += 12;
 
-        // ===== Persönliche Daten =====
-        y = writeSectionTitle(doc, 'Persönliche Daten', y);
+        doc.setDrawColor(120);
+        doc.line(20, y, 190, y);
 
-        const birthDate = `${val('cvBirthDay')}.${val('cvBirthMonth')}.${val('cvBirthYear')}`;
-
-        y = writeText(doc, `Geburtsdatum: ${birthDate}`, y);
-        y = writeText(doc, `Geburtsort: ${val('cvBirthPlace')}`, y);
-
-        // ===== Bildungsweg =====
-        y = writeSectionTitle(doc, 'Bildungsweg', y);
-        y = writeText(doc, val('cvSchool'), y);
-
-        // ===== Berufserfahrung =====
-        y = writeSectionTitle(doc, 'Berufserfahrung', y);
-        y = writeList(doc, val('cvExperience'), y);
-
-        // ===== Fähigkeiten =====
-        y = writeSectionTitle(doc, 'Kenntnisse & Fähigkeiten', y);
-        y = writeList(doc, val('cvSkills'), y);
-
-        // ===== Sprachen =====
-        y = writeSectionTitle(doc, 'Sprachen', y);
-        y = writeList(doc, val('cvLanguages'), y);
-
-        // ===== Stärken =====
-        y = writeSectionTitle(doc, 'Stärken', y);
-        y = writeList(doc, val('cvStrengths'), y);
-
-        // ===== Interessen =====
-        y = writeSectionTitle(doc, 'Interessen', y);
-        y = writeList(doc, val('cvHobbies'), y);
-
-        // ===== Footer =====
         y += 10;
-        y = checkPageBreak(doc, y);
+
+        // ===== PERSÖNLICHE DATEN =====
+        y = section(doc, 'PERSÖNLICHE DATEN', y);
+
+        const birth = `${val('cvBirthDay')}.${val('cvBirthMonth')}.${val('cvBirthYear')}`;
+
+        y = text(doc, `Geburtsdatum: ${birth}`, y);
+        y = text(doc, `Geburtsort: ${val('cvBirthPlace')}`, y);
+
+        // ===== BILDUNGSWEG =====
+        y = section(doc, 'BILDUNGSWEG', y);
+        y = text(doc, val('cvSchool'), y);
+
+        // ===== ERFAHRUNG =====
+        y = section(doc, 'PRAKTISCHE ERFAHRUNG', y);
+        y = bulletList(doc, val('cvExperience'), y);
+
+        // ===== KENNTNISSE =====
+        y = section(doc, 'KENNTNISSE & FÄHIGKEITEN', y);
+        y = bulletList(doc, val('cvSkills'), y);
+
+        // ===== SPRACHEN =====
+        y = section(doc, 'SPRACHEN', y);
+        y = bulletList(doc, val('cvLanguages'), y);
+
+        // ===== STÄRKEN =====
+        y = section(doc, 'STÄRKEN', y);
+        y = bulletList(doc, val('cvStrengths'), y);
+
+        // ===== INTERESSEN =====
+        y = section(doc, 'INTERESSEN', y);
+        y = bulletList(doc, val('cvHobbies'), y);
+
+        // ===== FOOTER =====
+        y += 15;
+        y = checkPage(doc, y);
 
         doc.setFontSize(10);
-        doc.text('Ort, Datum: ____________________', 20, y);
-        doc.text('Unterschrift: ____________________', 120, y);
+        doc.text('Ort, Datum: _________________________', 20, y);
+        doc.text('Unterschrift: _________________________', 120, y);
 
         doc.save('Lebenslauf.pdf');
 
     } catch (err) {
-        showError('lebenslaufError', 'PDF konnte nicht erstellt werden.');
         console.error(err);
+        showError('lebenslaufError', 'PDF konnte nicht erstellt werden.');
     } finally {
         btn.disabled = false;
         btn.textContent = 'PDF herunterladen';
