@@ -143,14 +143,6 @@ export function generateLebenslaufPDF(btn) {
         y = section(doc, 'INTERESSEN', y);
         y = list(doc, val('cvHobbies'), y);
 
-        // ===== FOOTER (MINIMAL, PRO) =====
-        y += 10;
-        y = checkPage(doc, y);
-
-        doc.setFontSize(9);
-        doc.setTextColor(120, 120, 120);
-        doc.text('Lebenslauf automatisch generiert', 20, y);
-
         doc.save('Lebenslauf.pdf');
 
     } catch (err) {
