@@ -1,70 +1,68 @@
-import {clearError, showError} from './pdf-utils.js';
+import { clearError, showError } from './pdf-utils.js';
 
-/** Высота страницы A4 во внутренних единицах jsPDF (мм). */
 const PAGE_HEIGHT = 297;
-
-/** Нижнее поле - контент не размещается ниже этой координаты. */
 const MARGIN_BOTTOM = 20;
 
-/**
- * Читает значение поля по идентификатору элемента.
- *
- * @param {string} id  идентификатор элемента
- * @returns {string}   обрезанное значение или пустая строка, если элемент не найден
- */
 function val(id) {
     return (document.getElementById(id)?.value ?? '').trim();
 }
 
-/**
- * Выводит строку с меткой (жирный заголовок + обычный текст значения) в заданной колонке.
- * При переполнении страницы автоматически добавляет новую.
- *
- * @param {import('jspdf').jsPDF} doc       активный документ jsPDF
- * @param {number}                x         левая граница колонки (мм)
- * @param {number}                y         текущая позиция по оси Y (мм)
- * @param {string}                label     подпись поля
- * @param {string}                value     значение поля (пустое - выводится как «–»)
- * @param {number}                wrapWidth максимальная ширина текста в колонке (мм)
- * @returns {number}  обновлённая позиция по оси Y
- */
-function writeRow(doc, x, y, label, value, wrapWidth) {
-    const lineH = 6;   // межстрочный интервал при размере шрифта 11 pt (мм)
-    const gap = 4;     // отступ между строками
-
-    // Жирная метка
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    if (y + lineH > PAGE_HEIGHT - MARGIN_BOTTOM) {
+function checkPageBreak(doc, y) {
+    if (y > PAGE_HEIGHT - MARGIN_BOTTOM) {
         doc.addPage();
-        y = 30;
+        return 25;
     }
-    doc.text(`${label}:`, x, y);
-    y += lineH;
-
-    // Обычный текст значения (с переносом строк)
-    doc.setFont('helvetica', 'normal');
-    const lines = doc.splitTextToSize(value || '–', wrapWidth);
-    for (const line of lines) {
-        if (y + lineH > PAGE_HEIGHT - MARGIN_BOTTOM) {
-            doc.addPage();
-            y = 30;
-        }
-        doc.text(line, x, y);
-        y += lineH;
-    }
-
-    return y + gap;
+    return y;
 }
 
-/**
- * Генерирует и инициирует загрузку Lebenslauf в формате PDF.
- * Блокирует кнопку на время генерации, исключая повторные нажатия.
- * Валидация полей выполняется мастером при переходе между шагами,
- * поэтому кнопка загрузки доступна только при корректно заполненных данных.
- *
- * @param {HTMLButtonElement} btn  кнопка, инициировавшая действие
- */
+function writeSectionTitle(doc, title, y) {
+    y = checkPageBreak(doc, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text(title, 20, y);
+
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.line(20, y + 2, 190, y + 2);
+
+    return y + 10;
+}
+
+function writeText(doc, text, y) {
+    const lineHeight = 6;
+    const lines = doc.splitTextToSize(text || '–', 170);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+
+    for (const line of lines) {
+        y = checkPageBreak(doc, y);
+        doc.text(line, 20, y);
+        y += lineHeight;
+    }
+
+    return y + 4;
+}
+
+function writeList(doc, text, y) {
+    const items = (text || '').split('\n');
+
+    for (const item of items) {
+        if (!item.trim()) continue;
+
+        y = checkPageBreak(doc, y);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+
+        doc.text('• ' + item.trim(), 22, y);
+        y += 6;
+    }
+
+    return y + 2;
+}
+
 export function generateLebenslaufPDF(btn) {
     clearError('lebenslaufError');
 
@@ -72,61 +70,76 @@ export function generateLebenslaufPDF(btn) {
     btn.textContent = 'Wird erstellt…';
 
     try {
-        const {jsPDF} = window.jspdf;
+        const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // -- Заголовок документа --
-        doc.setFontSize(20);
+        let y = 25;
+
+        // ===== HEADER =====
         doc.setFont('helvetica', 'bold');
-        doc.text('Lebenslauf', 105, 20, {align: 'center'});
+        doc.setFontSize(22);
+        doc.text(val('cvName') || 'Max Mustermann', 20, y);
+
+        y += 8;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+
+        const contactLine = [
+            val('cvAddress'),
+            val('cvPhone'),
+            val('cvEmail')
+        ].filter(Boolean).join(' | ');
+
+        doc.text(contactLine, 20, y);
+
+        y += 15;
+
+        // ===== Persönliche Daten =====
+        y = writeSectionTitle(doc, 'Persönliche Daten', y);
 
         const birthDate = `${val('cvBirthDay')}.${val('cvBirthMonth')}.${val('cvBirthYear')}`;
 
-        // -- Геометрия колонок --
-        // Левая колонка: x=20, ширина 80 мм -> правый край ~100 мм
-        // Правая колонка: x=110, ширина 85 мм -> правый край ~195 мм
-        // Промежуток между колонками: 10 мм
-        const leftX = 20;
-        const rightX = 110;
-        const leftWrap = 80;
-        const rightWrap = 85;
+        y = writeText(doc, `Geburtsdatum: ${birthDate}`, y);
+        y = writeText(doc, `Geburtsort: ${val('cvBirthPlace')}`, y);
 
-        // -- Левая колонка --
-        let leftY = 40;
+        // ===== Bildungsweg =====
+        y = writeSectionTitle(doc, 'Bildungsweg', y);
+        y = writeText(doc, val('cvSchool'), y);
 
-        const leftRows = [
-            ['Name', val('cvName')],
-            ['Geburtsdatum', birthDate],
-            ['Geburtsort', val('cvBirthPlace')],
-            ['Adresse', val('cvAddress')],
-            ['Telefon', val('cvPhone')],
-            ['Email', val('cvEmail')],
-            ['Sprachen', val('cvLanguages')],
-            ['Stärken', val('cvStrengths')],
-        ];
+        // ===== Berufserfahrung =====
+        y = writeSectionTitle(doc, 'Berufserfahrung', y);
+        y = writeList(doc, val('cvExperience'), y);
 
-        for (const [label, value] of leftRows) {
-            leftY = writeRow(doc, leftX, leftY, label, value, leftWrap);
-        }
+        // ===== Fähigkeiten =====
+        y = writeSectionTitle(doc, 'Kenntnisse & Fähigkeiten', y);
+        y = writeList(doc, val('cvSkills'), y);
 
-        // -- Правая колонка --
-        let rightY = 40;
+        // ===== Sprachen =====
+        y = writeSectionTitle(doc, 'Sprachen', y);
+        y = writeList(doc, val('cvLanguages'), y);
 
-        const rightRows = [
-            ['Schule', val('cvSchool')],
-            ['Erfahrungen', val('cvExperience')],
-            ['Fähigkeiten', val('cvSkills')],
-            ['Hobbys', val('cvHobbies')],
-        ];
+        // ===== Stärken =====
+        y = writeSectionTitle(doc, 'Stärken', y);
+        y = writeList(doc, val('cvStrengths'), y);
 
-        for (const [label, value] of rightRows) {
-            rightY = writeRow(doc, rightX, rightY, label, value, rightWrap);
-        }
+        // ===== Interessen =====
+        y = writeSectionTitle(doc, 'Interessen', y);
+        y = writeList(doc, val('cvHobbies'), y);
+
+        // ===== Footer =====
+        y += 10;
+        y = checkPageBreak(doc, y);
+
+        doc.setFontSize(10);
+        doc.text('Ort, Datum: ____________________', 20, y);
+        doc.text('Unterschrift: ____________________', 120, y);
 
         doc.save('Lebenslauf.pdf');
+
     } catch (err) {
-        showError('lebenslaufError', 'PDF konnte nicht erstellt werden. Bitte versuche es erneut.');
-        console.error('[Lebenslauf PDF]', err);
+        showError('lebenslaufError', 'PDF konnte nicht erstellt werden.');
+        console.error(err);
     } finally {
         btn.disabled = false;
         btn.textContent = 'PDF herunterladen';
